@@ -27,16 +27,16 @@ pipeline {
 		VAULT_SECRET_NAME = "${params.VAULT_SECRET_NAME}"
 		CHOICE = "${params.CHOICE}"
 		
-		#//Database variables
-		#TF_VAR_autonomous_database_db_name = "${params.DATABASE_NAME}"
-		#TF_VAR_autonomous_database_db_password = "${params.DATABASE_PASSWORD}"
+		//Database variables
+		//TF_VAR_autonomous_database_db_name = "${params.DATABASE_NAME}"
+		//TF_VAR_autonomous_database_db_password = "${params.DATABASE_PASSWORD}"
 		
 		//Terraform variables
 		TF_CLI_ARGS = "-no-color"
 		TF_VAR_terraform_state_url = "${params.TERRAFORM_STATE_URL}"
 		
-		#//Sqlcl env variables for sqlcl oci option.
-		#TNS_ADMIN = "./"
+		//Sqlcl env variables for sqlcl oci option.
+		//TNS_ADMIN = "./"
 
 	}
     
@@ -71,7 +71,7 @@ pipeline {
 					env.TF_VAR_region = sh returnStdout: true, script: 'vault kv get -field=region secret/demoatp'
 					env.DOCKERHUB_USERNAME = sh returnStdout: true, script: 'vault kv get -field=dockerhub_username secret/demoatp'
 					env.DOCKERHUB_PASSWORD = sh returnStdout: true, script: 'vault kv get -field=dockerhub_password secret/demoatp'
-					#env.KUBECONFIG = './kubeconfig'
+					//env.KUBECONFIG = './kubeconfig'
 					
 					//Terraform debugg option if problem
 					//env.TF_LOG="DEBUG"
@@ -87,7 +87,7 @@ pipeline {
 				echo "TF_VAR_terraform_state_url=${TF_VAR_terraform_state_url}"
 				echo "DOCKERHUB_USERNAME=${DOCKERHUB_USERNAME}"
 				echo "DOCKERHUB_PASSWORD=${DOCKERHUB_PASSWORD}"
-				#echo "KUBECONFIG=${KUBECONFIG}"
+				//echo "KUBECONFIG=${KUBECONFIG}"
 				
 				dir ('./tf/modules/vm') {
 					script {
@@ -142,65 +142,65 @@ pipeline {
 						echo "CHOICE=${env.CHOICE}"
 					    //Terraform plan
                         sh 'terraform plan -out myplan'
-					    # if (env.CHOICE == "Create") {
-						# 	//Check if Db is already there
-						# 	sh 'oci db autonomous-database list --compartment-id=${TF_VAR_compartment_ocid} --display-name=Demo2_InfraAsCode_ATP --lifecycle-state=AVAILABLE | jq ". | length" > result.test'	
-						# 	env.CHECK_DB = sh (script: 'cat ./result.test', returnStdout: true).trim()
-						# 	sh 'echo ${CHECK_DB}'
+					    /*if (env.CHOICE == "Create") {
+							//Check if Db is already there
+							sh 'oci db autonomous-database list --compartment-id=${TF_VAR_compartment_ocid} --display-name=Demo2_InfraAsCode_ATP --lifecycle-state=AVAILABLE | jq ". | length" > result.test'	
+							env.CHECK_DB = sh (script: 'cat ./result.test', returnStdout: true).trim()
+							sh 'echo ${CHECK_DB}'
 							
-						# 	if (env.CHECK_DB == "1") {
-						# 		echo "Db Already Exists"
-						# 	}
-						# 	else {
-						# 		sh 'terraform plan -out myplan'
-						# 	}
+							if (env.CHECK_DB == "1") {
+								echo "Db Already Exists"
+							}
+							else {
+								sh 'terraform plan -out myplan'
+							}
 							
-						# }
-						# else {
-						#     sh 'terraform plan -destroy -out myplan'
-						# }
+						}
+						else {
+						    sh 'terraform plan -destroy -out myplan'
+						}*/
 					}
 				}
 			}
 		}
 		
-		# stage('TF Apply Minecraft VM') { 
-        #     steps {
-		# 		dir ('./tf/modules/vm') {
-		# 			sh 'ls'
+		/*stage('TF Apply Minecraft VM') { 
+            steps {
+				dir ('./tf/modules/vm') {
+					sh 'ls'
 					
-		# 			script {				
-		# 				echo "CHOICE=${env.CHOICE}"
+					script {				
+						echo "CHOICE=${env.CHOICE}"
 						
-		# 			    //Terraform plan
-		# 			    if (env.CHOICE == "Create") {
+					    //Terraform plan
+					    if (env.CHOICE == "Create") {
 							
-		# 					if (env.CHECK_DB == "1") {
-		# 						echo "Db Already Exists"
-		# 					}
-		# 					else {
-		# 						//Ask Question in order to apply terraform plan or not
-		# 						def deploy_validation = input(
-		# 						id: 'Deploy',
-		# 						message: 'Let\'s continue the deploy plan',
-		# 						type: "boolean")
+							if (env.CHECK_DB == "1") {
+								echo "Db Already Exists"
+							}
+							else {
+								//Ask Question in order to apply terraform plan or not
+								def deploy_validation = input(
+								id: 'Deploy',
+								message: 'Let\'s continue the deploy plan',
+								type: "boolean")
 							
-		# 						sh 'terraform apply -input=false -auto-approve myplan'
-		# 					}	
+								sh 'terraform apply -input=false -auto-approve myplan'
+							}	
 							
-		# 					sh 'ls'
+							sh 'ls'
 							
-		# 					//Get atp wallet because initial atp wallet from terraform seems to have problem during unzip.
-		# 					sh 'oci db autonomous-database list --compartment-id=${TF_VAR_compartment_ocid} --display-name=Demo2_InfraAsCode_ATP | jq -r .data[0].id > result.test'	
-		# 					env.DB_OCID = sh (script: 'cat ./result.test', returnStdout: true).trim()
-		# 					sh 'oci db autonomous-database generate-wallet --autonomous-database-id=${DB_OCID} --password=${TF_VAR_autonomous_database_db_password} --file=./myatpwallet.zip'
-		# 				}
-		# 				else {
-		# 				    sh 'terraform destroy -input=false -auto-approve'
-		# 				}
-		# 			}
-		# 		}
-		# 	}
-		# }
+							//Get atp wallet because initial atp wallet from terraform seems to have problem during unzip.
+							sh 'oci db autonomous-database list --compartment-id=${TF_VAR_compartment_ocid} --display-name=Demo2_InfraAsCode_ATP | jq -r .data[0].id > result.test'	
+							env.DB_OCID = sh (script: 'cat ./result.test', returnStdout: true).trim()
+							sh 'oci db autonomous-database generate-wallet --autonomous-database-id=${DB_OCID} --password=${TF_VAR_autonomous_database_db_password} --file=./myatpwallet.zip'
+						}
+						else {
+						    sh 'terraform destroy -input=false -auto-approve'
+						}
+					}
+				}
+			}
+		}*/
     }    
 }
