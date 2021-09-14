@@ -11,9 +11,7 @@ pipeline {
 	parameters {
         password(defaultValue: "xxxxxx", description: 'What is the vault token ?', name: 'VAULT_TOKEN')
 		string(defaultValue: "130.61.125.123", description: 'What is the vault server IP Address ?', name: 'VAULT_SERVER_IP')
-		string(defaultValue: "demoatp", description: 'What is the vault secret name ?', name: 'VAULT_SECRET_NAME')  
-		//string(defaultValue: "atpdb2", description: 'What is the database name ?', name: 'DATABASE_NAME') 
-		//password(defaultValue: "AlphA_2014_!", description: 'What is the database password ?', name: 'DATABASE_PASSWORD')  		
+		string(defaultValue: "demoatp", description: 'What is the vault secret name ?', name: 'VAULT_SECRET_NAME')  	
 		string(defaultValue: "https://objectstorage.eu-frankfurt-1.oraclecloud.com/p/cnNvV3PkZmsWFgy3q7YnNXyBe8ukmwvDNA_OIm56V9wLXSPnDk5nMl0ugEJzo_Up/n/oraseemeafrtech1/b/Minecraft/o/terraform.tfstate", description: 'Where is stored the terraform state ?', name: 'TERRAFORM_STATE_URL')  
 		choice(name: 'CHOICE', choices: ['Create', 'Remove'], description: 'Choose between Create or Remove Infrastructure')
     }
@@ -27,17 +25,9 @@ pipeline {
 		VAULT_SECRET_NAME = "${params.VAULT_SECRET_NAME}"
 		CHOICE = "${params.CHOICE}"
 		
-		//Database variables
-		//TF_VAR_autonomous_database_db_name = "${params.DATABASE_NAME}"
-		//TF_VAR_autonomous_database_db_password = "${params.DATABASE_PASSWORD}"
-		
 		//Terraform variables
 		TF_CLI_ARGS = "-no-color"
 		TF_VAR_terraform_state_url = "${params.TERRAFORM_STATE_URL}"
-		
-		//Sqlcl env variables for sqlcl oci option.
-		//TNS_ADMIN = "./"
-
 	}
     
     stages {
@@ -71,7 +61,6 @@ pipeline {
 					env.TF_VAR_region = sh returnStdout: true, script: 'vault kv get -field=region secret/demoatp'
 					env.DOCKERHUB_USERNAME = sh returnStdout: true, script: 'vault kv get -field=dockerhub_username secret/demoatp'
 					env.DOCKERHUB_PASSWORD = sh returnStdout: true, script: 'vault kv get -field=dockerhub_password secret/demoatp'
-					//env.KUBECONFIG = './kubeconfig'
 					
 					//Terraform debugg option if problem
 					//env.TF_LOG="DEBUG"
@@ -141,30 +130,18 @@ pipeline {
 					script {
 						echo "CHOICE=${env.CHOICE}"
 					    //Terraform plan
-                        sh 'terraform plan -out myplan'
-					    /*if (env.CHOICE == "Create") {
-							//Check if Db is already there
-							sh 'oci db autonomous-database list --compartment-id=${TF_VAR_compartment_ocid} --display-name=Demo2_InfraAsCode_ATP --lifecycle-state=AVAILABLE | jq ". | length" > result.test'	
-							env.CHECK_DB = sh (script: 'cat ./result.test', returnStdout: true).trim()
-							sh 'echo ${CHECK_DB}'
-							
-							if (env.CHECK_DB == "1") {
-								echo "Db Already Exists"
-							}
-							else {
-								sh 'terraform plan -out myplan'
-							}
-							
+					    if (env.CHOICE == "Create") {
+							sh 'terraform plan -out myplan'
 						}
 						else {
 						    sh 'terraform plan -destroy -out myplan'
-						}*/
+						}
 					}
 				}
 			}
 		}
 		
-		/*stage('TF Apply Minecraft VM') { 
+		stage('TF Apply Minecraft VM') { 
             steps {
 				dir ('./tf/modules/vm') {
 					sh 'ls'
@@ -174,26 +151,7 @@ pipeline {
 						
 					    //Terraform plan
 					    if (env.CHOICE == "Create") {
-							
-							if (env.CHECK_DB == "1") {
-								echo "Db Already Exists"
-							}
-							else {
-								//Ask Question in order to apply terraform plan or not
-								def deploy_validation = input(
-								id: 'Deploy',
-								message: 'Let\'s continue the deploy plan',
-								type: "boolean")
-							
-								sh 'terraform apply -input=false -auto-approve myplan'
-							}	
-							
-							sh 'ls'
-							
-							//Get atp wallet because initial atp wallet from terraform seems to have problem during unzip.
-							sh 'oci db autonomous-database list --compartment-id=${TF_VAR_compartment_ocid} --display-name=Demo2_InfraAsCode_ATP | jq -r .data[0].id > result.test'	
-							env.DB_OCID = sh (script: 'cat ./result.test', returnStdout: true).trim()
-							sh 'oci db autonomous-database generate-wallet --autonomous-database-id=${DB_OCID} --password=${TF_VAR_autonomous_database_db_password} --file=./myatpwallet.zip'
+							sh 'terraform apply -input=false -auto-approve myplan'
 						}
 						else {
 						    sh 'terraform destroy -input=false -auto-approve'
@@ -201,6 +159,6 @@ pipeline {
 					}
 				}
 			}
-		}*/
+		}
     }    
 }
