@@ -27,7 +27,7 @@ pipeline {
 		VAULT_SECRET_NAME = "${params.VAULT_SECRET_NAME}"
 		CHOICE = "${params.CHOICE}"
 		
-		//Database variables
+		#//Database variables
 		#TF_VAR_autonomous_database_db_name = "${params.DATABASE_NAME}"
 		#TF_VAR_autonomous_database_db_password = "${params.DATABASE_PASSWORD}"
 		
@@ -35,7 +35,7 @@ pipeline {
 		TF_CLI_ARGS = "-no-color"
 		TF_VAR_terraform_state_url = "${params.TERRAFORM_STATE_URL}"
 		
-		//Sqlcl env variables for sqlcl oci option.
+		#//Sqlcl env variables for sqlcl oci option.
 		#TNS_ADMIN = "./"
 
 	}
@@ -71,7 +71,7 @@ pipeline {
 					env.TF_VAR_region = sh returnStdout: true, script: 'vault kv get -field=region secret/demoatp'
 					env.DOCKERHUB_USERNAME = sh returnStdout: true, script: 'vault kv get -field=dockerhub_username secret/demoatp'
 					env.DOCKERHUB_PASSWORD = sh returnStdout: true, script: 'vault kv get -field=dockerhub_password secret/demoatp'
-					env.KUBECONFIG = './kubeconfig'
+					#env.KUBECONFIG = './kubeconfig'
 					
 					//Terraform debugg option if problem
 					//env.TF_LOG="DEBUG"
@@ -87,7 +87,7 @@ pipeline {
 				echo "TF_VAR_terraform_state_url=${TF_VAR_terraform_state_url}"
 				echo "DOCKERHUB_USERNAME=${DOCKERHUB_USERNAME}"
 				echo "DOCKERHUB_PASSWORD=${DOCKERHUB_PASSWORD}"
-				echo "KUBECONFIG=${KUBECONFIG}"
+				#echo "KUBECONFIG=${KUBECONFIG}"
 				
 				dir ('./tf/modules/vm') {
 					script {
