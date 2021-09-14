@@ -20,13 +20,9 @@ pipeline {
 	environment {
 		//Vault Env mandatory variables
 		VAULT_TOKEN = "${params.VAULT_TOKEN}"
-		echo "${VAULT_TOKEN}"
 		VAULT_SERVER_IP = "${params.VAULT_SERVER_IP}"
-		echo "${VAULT_SERVER_IP}"
 		VAULT_ADDR = "http://${params.VAULT_SERVER_IP}:8200"
-		echo "${VAULT_ADDR}"
 		VAULT_SECRET_NAME = "${params.VAULT_SECRET_NAME}"
-		echo "${VAULT_SECRET_NAME}"
 		CHOICE = "${params.CHOICE}"
 		
 		//Terraform variables
@@ -35,6 +31,15 @@ pipeline {
 	}
     
     stages {
+        stage('Check Vault Information') {
+            steps {
+				echo "${VAULT_TOKEN}"
+				echo "${VAULT_SERVER_IP}"
+				echo "${VAULT_ADDR}"
+				echo "${VAULT_SECRET_NAME}"
+            }
+        }
+
 		stage('Display User Name') {
 			agent any
             steps {
