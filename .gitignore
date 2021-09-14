@@ -1,0 +1,13 @@
+#  Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# env files
+*.ps1
+backend.tf
+
+# SSh Keys
+**/SshKeys/*
