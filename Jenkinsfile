@@ -136,7 +136,7 @@ pipeline {
 					sh 'ls'
 					
 					//Terraform initialization in order to get oci plugin provider	
-					sh 'terraform init -input=false -backend-config="address=${TF_VAR_terraform_state_url}"'
+					sh 'terraform init -reconfigure -backend-config="address=${TF_VAR_terraform_state_url}"'
 					
 					
 					script {
@@ -164,7 +164,7 @@ pipeline {
 					    //Terraform plan
 					    if (env.CHOICE == "Create") {
 							sh 'terraform apply -input=false -auto-approve myplan'
-							sh 'terraform output -json'
+							sh 'terraform output -json | jq .'
 						}
 						else {
 						    sh 'terraform destroy -input=false -auto-approve'
