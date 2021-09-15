@@ -184,6 +184,7 @@ pipeline {
 						sh 'cat ./hosts'
 						sh 'pwd'
 						sh 'whoami'
+						sh 'cp ../SshKeys/IaaSkeys/id_rsa /home/root/.ssh/id_rsa'
 						sh 'ansible all --list-hosts'
 						sh 'ansible-playbook ./minecraftsvr.yml --syntax-check'
 						sh 'ansible-playbook ./minecraftsvr.yml'
