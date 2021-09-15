@@ -183,6 +183,7 @@ pipeline {
 						sh 'sed -i \'s/ipaddressparam/\'$VM_PUBLICIP\'/\' ./hosts'
 						sh 'cat ./hosts'
 						sh 'pwd'
+						sh 'ansible all --list-hosts'
 						sh 'ansible-playbook ./minecraftsvr.yml'
 					}
 				}
