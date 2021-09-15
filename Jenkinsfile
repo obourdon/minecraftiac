@@ -103,6 +103,7 @@ pipeline {
 						sh 'ls'
 						sh 'cat ./bmcs_api_key.pem'
 						sh 'cat ./id_rsa'
+						sh 'chmod 400 ./id_rsa'
 						sh 'cat ./id_rsa.pub'
 						
 						env.TF_VAR_private_key_path = './bmcs_api_key.pem'
