@@ -194,7 +194,7 @@ pipeline {
 							sh 'ansible-playbook ./minecraftsvr.yml'
 						}
 						else {
-						    sh 'echo "Nothing To do cause the VM is destroyed"'
+						    sh 'echo "Nothing To do with ansible cause the VM is destroyed"'
 						}
 					}
 				}
