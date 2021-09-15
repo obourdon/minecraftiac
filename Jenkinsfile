@@ -173,7 +173,7 @@ pipeline {
 			}
 		} 
 
-		/*stage('Update Ansible Host File') { 
+		stage('Update Ansible Host File') { 
 				steps {
 					dir ('./ansible') {
 						sh 'ls'
