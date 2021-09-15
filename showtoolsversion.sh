@@ -15,3 +15,5 @@ python3 --version
 ansible --version
 #OCI CLI
 oci --version
+#Ssh 
+ssh -V
