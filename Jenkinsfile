@@ -176,16 +176,26 @@ pipeline {
 			}
 		} 
 
-		stage('Update Ansible Host File') { 
+		stage('Ansible Minecraft Server Install') { 
 				steps {
 					dir ('./ansible') {
-						sh 'ls'
-						sh 'echo $VM_PUBLICIP'
-						sh 'sed -i \'s/ipaddressparam/\'$VM_PUBLICIP\'/\' ./hosts'
-						sh 'cat ./hosts'
-						sh 'ansible all --list-hosts'
-						sh 'ansible-playbook ./minecraftsvr.yml --syntax-check'
-						sh 'ansible-playbook ./minecraftsvr.yml'
+
+						script {				
+						echo "CHOICE=${env.CHOICE}"
+						
+					    //Terraform plan
+					    if (env.CHOICE == "Create") {
+							sh 'ls'
+							sh 'echo $VM_PUBLICIP'
+							sh 'sed -i \'s/ipaddressparam/\'$VM_PUBLICIP\'/\' ./hosts'
+							sh 'cat ./hosts'
+							sh 'ansible all --list-hosts'
+							sh 'ansible-playbook ./minecraftsvr.yml --syntax-check'
+							sh 'ansible-playbook ./minecraftsvr.yml'
+						}
+						else {
+						    sh 'echo "Nothing To do cause the VM is destroyed"'
+						}
 					}
 				}
 		}
