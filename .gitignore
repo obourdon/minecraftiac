@@ -8,7 +8,6 @@
 
 # env files
 *.ps1
-backend.tf
 
 # SSh Keys
 **/SshKeys/*
