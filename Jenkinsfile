@@ -179,7 +179,8 @@ pipeline {
 				steps {
 					dir ('./ansible') {
 						sh 'ls'
-						sh 'sed -i \'s/ipaddressparam/$VM_PUBLICIP/\' ./hosts'
+						sh 'echo $VM_PUBLICIP'
+						sh 'sed -i \'s/ipaddressparam/\'$VM_PUBLICIP\'/\' ./hosts'
 						sh 'cat ./hosts'
 					}
 				}
