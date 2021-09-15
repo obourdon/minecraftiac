@@ -177,7 +177,7 @@ pipeline {
 				steps {
 					dir ('./ansible') {
 						sh 'ls'
-						sh 'sed -i \'s/ipaddressparam/129.159.193.222/\''
+						sh 'sed -i \'s/ipaddressparam/129.159.193.222/\' ./hosts'
 						sh 'cat ./hosts'
 					}
 				}
