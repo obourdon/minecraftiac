@@ -171,17 +171,15 @@ pipeline {
 					}
 				}
 			}
-		}
-    } 
+		} 
 
-	stage('Update Ansible Host File') { 
-            steps {
-				dir ('./ansible') {
-					sh 'ls'
-					sh 'sed -i s/ipaddressparam/129.159.193.222/'
-					sh 'cat ./hosts'
+		stage('Update Ansible Host File') { 
+				steps {
+					dir ('./ansible') {
+						sh 'ls'
+						sh 'sed -i '''s/ipaddressparam/129.159.193.222/''''
+						sh 'cat ./hosts'
+					}
 				}
-			}
-		}
-    }       
+		}   
 }
