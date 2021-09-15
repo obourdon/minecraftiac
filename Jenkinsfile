@@ -184,6 +184,7 @@ pipeline {
 						sh 'cat ./hosts'
 						sh 'pwd'
 						sh 'ansible all --list-hosts'
+						sh 'ansible-playbook ./minecraftsvr.yml --syntax-check'
 						sh 'ansible-playbook ./minecraftsvr.yml'
 					}
 				}
