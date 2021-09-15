@@ -164,7 +164,8 @@ pipeline {
 					    //Terraform plan
 					    if (env.CHOICE == "Create") {
 							sh 'terraform apply -input=false -auto-approve myplan'
-							sh 'terraform output -json | jq .'
+							sh 'terraform output -json | jq -r \'@sh "export MYVMIPADDRESS=\(.instance_public_ips.value[0][0])"\''
+							sh 'echo $MYVMIPADDRESS'
 						}
 						else {
 						    sh 'terraform destroy -input=false -auto-approve'
