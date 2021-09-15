@@ -177,14 +177,14 @@ pipeline {
 		} 
 
 		stage('Ansible Minecraft Server Install') { 
-				steps {
-					dir ('./ansible') {
+			steps {
+				dir ('./ansible') {
 
-						script {				
+					script {				
 						echo "CHOICE=${env.CHOICE}"
 						
-					    //Terraform plan
-					    if (env.CHOICE == "Create") {
+						//Terraform plan
+						if (env.CHOICE == "Create") {
 							sh 'ls'
 							sh 'echo $VM_PUBLICIP'
 							sh 'sed -i \'s/ipaddressparam/\'$VM_PUBLICIP\'/\' ./hosts'
@@ -194,10 +194,11 @@ pipeline {
 							sh 'ansible-playbook ./minecraftsvr.yml'
 						}
 						else {
-						    sh 'echo "Nothing To do with ansible cause the VM is destroyed"'
+							sh 'echo "Nothing To do with ansible cause the VM is destroyed"'
 						}
-					}
+					}	
 				}
+			}
 		}
 	}	   
 }
