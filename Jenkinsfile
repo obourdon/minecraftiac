@@ -164,8 +164,8 @@ pipeline {
 					    //Terraform plan
 					    if (env.CHOICE == "Create") {
 							sh 'terraform apply -input=false -auto-approve myplan'
-							sh 'export MYVMIPADDRESS=$(terraform output -json | jq -r .instance_public_ips.value[0][0])'
-							sh 'echo $MYVMIPADDRESS'
+							sh 'terraform output -json | jq -r .instance_public_ips.value[0][0] > result.test'
+							env.VM_PUBLICIP = sh (script: 'cat ./result.test', returnStdout: true).trim()
 						}
 						else {
 						    sh 'terraform destroy -input=false -auto-approve'
@@ -179,7 +179,7 @@ pipeline {
 				steps {
 					dir ('./ansible') {
 						sh 'ls'
-						sh 'sed -i \'s/ipaddressparam/129.159.193.222/\' ./hosts'
+						sh 'sed -i \'s/ipaddressparam/$VM_PUBLICIP/\' ./hosts'
 						sh 'cat ./hosts'
 					}
 				}
