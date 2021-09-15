@@ -164,6 +164,7 @@ pipeline {
 					    //Terraform plan
 					    if (env.CHOICE == "Create") {
 							sh 'terraform apply -input=false -auto-approve myplan'
+							sh 'terraform output -json'
 						}
 						else {
 						    sh 'terraform destroy -input=false -auto-approve'
