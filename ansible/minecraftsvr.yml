@@ -1,0 +1,61 @@
+---
+- name: my minecraft play
+  hosts: minecraft
+  become: true
+  #become_method: sudo
+  #become_user: vagrant
+  #remote-user: vagrant
+  # vars:
+  #   ansible-become-password: vagrant
+  #   ansible-remote-password: vagrant
+  vars: 
+    mcs_dir: /home/opc
+    mcs_jar: server.jar
+    session_name: mcserver
+  tasks:
+    - name: ping
+      ping:
+    - name: show hostname
+      command: hostname  
+    - name : install java
+      yum:
+        name: java-16-openjdk-devel
+    - name : download minecraft server
+      become: yes
+      get_url:
+        url: https://launcher.mojang.com/v1/objects/a16d67e5807f57fc4e550299cf20226194497dc2/server.jar
+        dest: /home/opc
+    - name : copy eula.txt for minecraft server 
+      copy:
+        src: ./eula.txt
+        dest: /home/opc
+    - name : add minecraft port udp on firewalld
+      firewalld:
+        port: 25565/udp
+        permanent: true
+        zone: public
+        state: enabled 
+        immediate: true
+    - name : add minecraft port tcp on firewalld
+      firewalld:
+        port: 25565/tcp
+        permanent: true
+        zone: public
+        state: enabled   
+        immediate: true
+    - name: reload service firewalld
+      systemd:
+        name: firewalld
+        state: reloaded
+    - name : install screen
+      yum:
+        name: screen
+    - name: Check screen for running sessions
+      shell: screen -ls
+      register: sessions
+      failed_when: sessions.rc == 0 or sessions.rc >= 2       
+    - name: Run mcserver
+      command: screen -s {{ session_name }} -d -m java -Xmx1024M -Xms1024M -jar {{ mcs_dir }}/{{ mcs_jar }} nogui
+      args:
+        chdir: '{{ mcs_dir }}'
+      when: sessions.stdout.find(session_name) == -1

@@ -9,7 +9,8 @@ pipeline {
 	
 	//Parameters of the pipeline. You can define more parameters in this pipeline in order to have less hard code variables.
 	parameters {
-        //password(defaultValue: "WdPdcgUA1XNy23MoiR8uuOWu", description: 'What is the vault token ?', name: 'VAULT_TOKEN')
+		//Jenkins Bugg with password so I used string for demo
+        //password(defaultValue: "xxxxxxxxxx", description: 'What is the vault token ?', name: 'VAULT_TOKEN')
 		string(defaultValue: "WdPdcgUA1XNy23MoiR8uuOWu", description: 'What is the vault token ?', name: 'VAULT_TOKEN')
 		string(defaultValue: "130.61.125.123", description: 'What is the vault server IP Address ?', name: 'VAULT_SERVER_IP')
 		string(defaultValue: "demoatp", description: 'What is the vault secret name ?', name: 'VAULT_SECRET_NAME')  	
@@ -32,14 +33,15 @@ pipeline {
 	}
     
     stages {
-        stage('Check Vault Information') {
+		//Only for debug due to Jenkins password bugg
+        /*stage('Check Vault Information') {
             steps {
 				echo "${VAULT_TOKEN}"
 				echo "${VAULT_SERVER_IP}"
 				echo "${VAULT_ADDR}"
 				echo "${VAULT_SECRET_NAME}"
             }
-        }
+        }*/
 
 		stage('Display User Name') {
 			agent any
@@ -128,7 +130,7 @@ pipeline {
             }
         }
 		
-		stage('TF Plan Miencraft VM') { 
+		stage('TF Plan Minecraft VM') { 
             steps {
 				dir ('./tf/modules/vm') {
 					sh 'ls'
@@ -170,5 +172,16 @@ pipeline {
 				}
 			}
 		}
-    }    
+    } 
+
+	stage('Update Ansible Host File') { 
+            steps {
+				dir ('./ansible') {
+					sh 'ls'
+					sh 'sed -i 's/ipaddressparam/129.159.193.222/
+					sh 'cat ./hosts'
+				}
+			}
+		}
+    }       
 }
