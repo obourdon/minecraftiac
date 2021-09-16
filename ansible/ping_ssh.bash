@@ -39,7 +39,7 @@ while :; do
             #break
         #fi
     #fi
-    if [[ $status == "Host key verification failed." ]] ; then
+    if [[ $status == *"failed"* ]] ; then
             # permission denied indicates the ssh link is okay
             echo "server response found"
             break
