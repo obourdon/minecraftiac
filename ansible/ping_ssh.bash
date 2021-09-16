@@ -24,6 +24,7 @@ while :; do
     # https://stackoverflow.com/questions/1405324/how-to-create-a-bash-script-to-check-the-ssh-connection
     status=$(ssh -o BatchMode=yes -o ConnectTimeout=5 ${HOST} -p ${PORT} echo ok 2>&1)
     RESULT=$?
+    echo $status
     echo $RESULT
     if [ $RESULT -eq 0 ]; then
         # this is not really expected unless a key lets you log in
