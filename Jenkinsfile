@@ -221,6 +221,8 @@ pipeline {
 							/*sh 'sed -i \'s/ipaddressparam/$VM_PUBLICIP/\' ./hosts'*/
 							sh 'cat ./hosts'
 							sh 'ansible all --list-hosts'
+							sh 'ansible-playbook ./minecraftprereq.yml --syntax-check'
+							sh 'ansible-playbook ./minecraftprereq.yml'
 							sh 'ansible-playbook ./minecraftsvr.yml --syntax-check'
 							sh 'ansible-playbook ./minecraftsvr.yml'
 						}
