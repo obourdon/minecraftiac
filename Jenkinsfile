@@ -182,13 +182,17 @@ pipeline {
 
 					script {				
 						echo "CHOICE=${env.CHOICE}"
+
+						environment {
+    						VM_PUBLICIP = "${env.VM_PUBLICIP}"
+  						}
 						
 						//Terraform plan
 						if (env.CHOICE == "Create") {
 							sh 'ls'
 							sh 'echo $VM_PUBLICIP'
 							sh 'chmod +x ./ping_ssh.bash'
-							sh './ping_ssh.bash \'$VM_PUBLICIP\' 22'
+							sh './ping_ssh.bash $VM_PUBLICIP 22'
 						}
 						else {
 							sh 'echo "Nothing To do with ssh cause the VM is destroyed"'
