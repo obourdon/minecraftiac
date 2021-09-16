@@ -176,6 +176,28 @@ pipeline {
 			}
 		} 
 
+		stage('Check VM Ssh Ready') { 
+			steps {
+				dir ('./ansible') {
+
+					script {				
+						echo "CHOICE=${env.CHOICE}"
+						
+						//Terraform plan
+						if (env.CHOICE == "Create") {
+							sh 'ls'
+							sh 'echo $VM_PUBLICIP'
+							sh 'chmod +x ./ping_ssh.bash'
+							sh './ping_ssh.bash \'$VM_PUBLICIP\' 22'
+						}
+						else {
+							sh 'echo "Nothing To do with ssh cause the VM is destroyed"'
+						}
+					}	
+				}
+			}
+		}
+
 		stage('Ansible Minecraft Server Install') { 
 			steps {
 				dir ('./ansible') {
