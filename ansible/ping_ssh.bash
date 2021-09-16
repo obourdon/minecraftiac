@@ -25,20 +25,26 @@ while :; do
     status=$(ssh -o BatchMode=yes -o ConnectTimeout=5 ${HOST} -p ${PORT} echo ok 2>&1)
     RESULT=$?
     echo $status
-    echo $RESULT
-    if [ $RESULT -eq 0 ]; then
+    #echo $RESULT
+    #if [ $RESULT -eq 0 ]; then
         # this is not really expected unless a key lets you log in
-        echo "connected ok"
-        break
-    fi
-    if [ $RESULT -eq 255 ]; then
+        #echo "connected ok"
+        #break
+    #fi
+    #if [ $RESULT -eq 255 ]; then
         # connection refused also gets you here
-        if [[ $status == *"Permission denied"* ]] ; then
+        #if [[ $status == *"Permission denied"* ]] ; then
+            # permission denied indicates the ssh link is okay
+            #echo "server response found"
+            #break
+        #fi
+    #fi
+    if [ $status == "Host key verification failed." ] ; then
             # permission denied indicates the ssh link is okay
             echo "server response found"
             break
-        fi
     fi
+
     TIMEOUT=$((TIMEOUT-1))
     if [ $TIMEOUT -eq 0 ]; then
         echo "timed out"
