@@ -51,6 +51,9 @@
     - name : install screen
       yum:
         name: screen
+    - name: Pause before running Minecraft Server
+      pause:
+        minutes: 1
     - name: Check screen for running sessions
       shell: screen -ls
       register: sessions
