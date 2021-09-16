@@ -51,9 +51,6 @@
     - name : install screen
       yum:
         name: screen
-    - name: Pause before running Minecraft Server
-      pause:
-        minutes: 1
     - name: Check screen for running sessions
       shell: screen -ls
       register: sessions
@@ -63,3 +60,12 @@
       args:
         chdir: '{{ mcs_dir }}'
       when: sessions.stdout.find(session_name) == -1
+    - name: Check screen for running sessions
+      shell: screen -ls
+      register: sessions
+      failed_when: sessions.rc == 0 or sessions.rc >= 2       
+    - name: Run mcserver
+      command: screen -s {{ session_name }} -d -m java -Xmx1024M -Xms1024M -jar {{ mcs_dir }}/{{ mcs_jar }} nogui
+      args:
+        chdir: '{{ mcs_dir }}'
+      when: sessions.stdout.find(session_name) == -1  
