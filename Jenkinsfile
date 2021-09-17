@@ -11,7 +11,7 @@ pipeline {
 	parameters {
 		//Jenkins Bugg with password so I used string for demo
         //password(defaultValue: "xxxxxxxxxx", description: 'What is the vault token ?', name: 'VAULT_TOKEN')
-		string(defaultValue: "WdPdcgUA1XNy23MoiR8uuOWu", description: 'What is the vault token ?', name: 'VAULT_TOKEN')
+		string(defaultValue: "xxxxxxxxxx", description: 'What is the vault token ?', name: 'VAULT_TOKEN')
 		string(defaultValue: "130.61.125.123", description: 'What is the vault server IP Address ?', name: 'VAULT_SERVER_IP')
 		string(defaultValue: "demoatp", description: 'What is the vault secret name ?', name: 'VAULT_SECRET_NAME')  	
 		string(defaultValue: "https://objectstorage.eu-frankfurt-1.oraclecloud.com/p/cnNvV3PkZmsWFgy3q7YnNXyBe8ukmwvDNA_OIm56V9wLXSPnDk5nMl0ugEJzo_Up/n/oraseemeafrtech1/b/Minecraft/o/terraform.tfstate", description: 'Where is stored the terraform state ?', name: 'TERRAFORM_STATE_URL')  
