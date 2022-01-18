@@ -50,15 +50,15 @@ variable "num_paravirtualized_volumes_per_instance" {
 }
 
 variable "instance_shape" {
-  default = "VM.Standard.E3.Flex"
+  default = "VM.Standard.A1.Flex"
 }
 
 variable "instance_ocpus" {
-  default = 2
+  default = 4
 }
 
 variable "instance_shape_config_memory_in_gbs" {
-  default = 6
+  default = 24
 }
 
 variable "instance_image_ocid" {
