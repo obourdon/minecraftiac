@@ -100,7 +100,7 @@ resource "oci_core_instance" "test_instance" {
   count               = var.num_instances
   availability_domain = data.oci_identity_availability_domain.ad.name
   compartment_id      = var.compartment_ocid
-  display_name        = "Minecraft${count.index}"
+  display_name        = "MinecraftHashitalk${count.index}"
   shape               = var.instance_shape
 
   shape_config {
