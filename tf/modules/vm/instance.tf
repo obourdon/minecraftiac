@@ -67,20 +67,20 @@ variable "instance_image_ocid" {
   default = {
     # See https://docs.us-phoenix-1.oraclecloud.com/images/
     # Oracle-provided image "Oracle-Autonomous-Linux-7.9-2021.08-0"
-    us-phoenix-1   = "ocid1.image.oc1.phx.aaaaaaaavxm3s4jskx5rcoi63rekg54e3a27v2b7tiuuumnx5owzhkul6ufq"
-    us-ashburn-1   = "ocid1.image.oc1.iad.aaaaaaaaqhzgbezuoq5fz7haq5p7uyydfipffclz6w7fwyzge7tcxbbloz3q"
-    eu-frankfurt-1 = "ocid1.image.oc1.eu-frankfurt-1.aaaaaaaausaoducbje667n5pmtba6mnrhy26dktwszx62hmcbsofkute2soq"
-    uk-london-1    = "ocid1.image.oc1.uk-london-1.aaaaaaaasyumqn2ct4llv4nq4agiu4rrxyxf2p64i5noessrrannkaok4cza"
+    # us-phoenix-1   = "ocid1.image.oc1.phx.aaaaaaaavxm3s4jskx5rcoi63rekg54e3a27v2b7tiuuumnx5owzhkul6ufq"
+    # us-ashburn-1   = "ocid1.image.oc1.iad.aaaaaaaaqhzgbezuoq5fz7haq5p7uyydfipffclz6w7fwyzge7tcxbbloz3q"
+    eu-frankfurt-1 = "ocid1.image.oc1.eu-frankfurt-1.aaaaaaaaajkxjdpgfzjl7tg3a7vzdvwnww6w5k47r5acwe4fqecowqwuoria"
+    # uk-london-1    = "ocid1.image.oc1.uk-london-1.aaaaaaaasyumqn2ct4llv4nq4agiu4rrxyxf2p64i5noessrrannkaok4cza"
   }
 }
 
 variable "flex_instance_image_ocid" {
   type = map(string)
   default = {
-    us-phoenix-1 = "ocid1.image.oc1.phx.aaaaaaaa6hooptnlbfwr5lwemqjbu3uqidntrlhnt45yihfj222zahe7p3wq"
-    us-ashburn-1 = "ocid1.image.oc1.iad.aaaaaaaa6tp7lhyrcokdtf7vrbmxyp2pctgg4uxvt4jz4vc47qoc2ec4anha"
-    eu-frankfurt-1 = "ocid1.image.oc1.eu-frankfurt-1.aaaaaaaadvi77prh3vjijhwe5xbd6kjg3n5ndxjcpod6om6qaiqeu3csof7a"
-    uk-london-1 = "ocid1.image.oc1.uk-london-1.aaaaaaaaw5gvriwzjhzt2tnylrfnpanz5ndztyrv3zpwhlzxdbkqsjfkwxaq"
+    # us-phoenix-1 = "ocid1.image.oc1.phx.aaaaaaaa6hooptnlbfwr5lwemqjbu3uqidntrlhnt45yihfj222zahe7p3wq"
+    # us-ashburn-1 = "ocid1.image.oc1.iad.aaaaaaaa6tp7lhyrcokdtf7vrbmxyp2pctgg4uxvt4jz4vc47qoc2ec4anha"
+    eu-frankfurt-1 = "ocid1.image.oc1.eu-frankfurt-1.aaaaaaaaajkxjdpgfzjl7tg3a7vzdvwnww6w5k47r5acwe4fqecowqwuoria"
+    # uk-london-1 = "ocid1.image.oc1.uk-london-1.aaaaaaaaw5gvriwzjhzt2tnylrfnpanz5ndztyrv3zpwhlzxdbkqsjfkwxaq"
   }
 }
 
