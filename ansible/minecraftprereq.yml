@@ -19,7 +19,7 @@
       command: hostname  
     - name : install java
       yum:
-        name: java-16-openjdk-devel
+        name: jdk-17.aarch64
         lock_timeout: 180
     - name : download minecraft server
       become: yes
