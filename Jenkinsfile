@@ -14,7 +14,7 @@ pipeline {
 		string(defaultValue: "xxxxxxxxxx", description: 'What is the vault token ?', name: 'VAULT_TOKEN')
 		string(defaultValue: "130.61.125.xxx", description: 'What is the vault server IP Address ?', name: 'VAULT_SERVER_IP')
 		string(defaultValue: "demoatp", description: 'What is the vault secret name ?', name: 'VAULT_SECRET_NAME')  	
-		string(defaultValue: "https://objectstorage.eu-frankfurt-1.oraclecloud.com/p/bA-RzH-4jDEfo5DjahyL6ytPjyo9BOHZv_mgFuHGh0EUilDAOaphKigvlW7uyl9F/n/oraseemeafrtech1/b/MinecraftHashitalk/o/terraform.tfstate", description: 'Where is stored the terraform state ?', name: 'TERRAFORM_STATE_URL')  
+		string(defaultValue: "https://objectstorage.eu-frankfurt-1.oraclecloud.com/p/pXXw-8B_fvFjOK5jDmiX2qFU7ALLkA3uFBQzGLBztO1uR3KQaXa4kP169wewcP1F/n/oraseemeafrtech1/b/MinecraftHashitalk/o/", description: 'Where is stored the terraform state ?', name: 'TERRAFORM_STATE_URL')  
 		choice(name: 'CHOICE', choices: ['Create', 'Remove'], description: 'Choose between Create or Remove Infrastructure')
     }
 	
