@@ -2,12 +2,6 @@
 - name: my minecraft play
   hosts: minecraft
   become: true
-  #become_method: sudo
-  #become_user: vagrant
-  #remote-user: vagrant
-  # vars:
-  #   ansible-become-password: vagrant
-  #   ansible-remote-password: vagrant
   vars: 
     mcs_dir: /home/opc
     mcs_jar: server.jar
@@ -24,7 +18,7 @@
     - name : download minecraft server
       become: yes
       get_url:
-        url: https://launcher.mojang.com/v1/objects/a16d67e5807f57fc4e550299cf20226194497dc2/server.jar
+        url: https://launcher.mojang.com/v1/objects/125e5adf40c659fd3bce3e66e67a16bb49ecc1b9/server.jar
         dest: /home/opc
     - name : copy eula.txt for minecraft server 
       copy:

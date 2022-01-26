@@ -2,12 +2,6 @@
 - name: my minecraft play
   hosts: minecraft
   become: true
-  #become_method: sudo
-  #become_user: vagrant
-  #remote-user: vagrant
-  # vars:
-  #   ansible-become-password: vagrant
-  #   ansible-remote-password: vagrant
   vars: 
     mcs_dir: /home/opc
     mcs_jar: server.jar
