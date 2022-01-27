@@ -106,8 +106,12 @@ pipeline {
 						sh 'chmod 400 ./id_rsa'
 						sh 'cat ./id_rsa.pub'
 						
-						env.TF_VAR_private_key_path = './bmcs_api_key.pem'
-						echo "TF_VAR_private_key_path=${TF_VAR_private_key_path}"
+						//Use private_key instead private_key_path
+						//env.TF_VAR_private_key_path = './bmcs_api_key.pem'
+						//echo "TF_VAR_private_key_path=${TF_VAR_private_key_path}"
+						env.TF_VAR_private_key=sh returnStdout: true, script: 'vault kv get -field=api_private_key secret/demoatp | tr -d "\n" | base64 --decode'
+						echo "TF_VAR_private_key=${TF_VAR_private_key}"
+						
 						env.TF_VAR_ssh_private_key = sh returnStdout: true, script: 'cat ./id_rsa'
 						echo "TF_VAR_ssh_private_key=${TF_VAR_ssh_private_key}"
 						env.TF_VAR_ssh_public_key = sh returnStdout: true, script: 'cat ./id_rsa.pub'
