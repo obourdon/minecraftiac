@@ -10,7 +10,10 @@ variable "user_ocid" {
 variable "fingerprint" {
 }
 
-variable "private_key_path" {
+//use private_key instead private_key_path
+//variable "private_key_path" {
+//}
+variable "private_key" {
 }
 
 variable "region" {
