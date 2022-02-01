@@ -331,8 +331,5 @@ resource "oci_core_security_list" "minecraft_security_list" {
   }
 }
 
-data "oci_identity_availability_domain" "ad" {
-  compartment_id = var.tenancy_ocid
-  ad_number      = 1
-}
+
 
