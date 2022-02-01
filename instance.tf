@@ -38,29 +38,6 @@ variable "instance_shape_config_memory_in_gbs" {
   default = 24
 }
 
-variable "instance_image_ocid" {
-  type = map(string)
-
-  default = {
-    # See https://docs.us-phoenix-1.oraclecloud.com/images/
-    # Oracle-provided image "Oracle-Autonomous-Linux-7.9-2021.08-0"
-    # us-phoenix-1   = "ocid1.image.oc1.phx.aaaaaaaavxm3s4jskx5rcoi63rekg54e3a27v2b7tiuuumnx5owzhkul6ufq"
-    # us-ashburn-1   = "ocid1.image.oc1.iad.aaaaaaaaqhzgbezuoq5fz7haq5p7uyydfipffclz6w7fwyzge7tcxbbloz3q"
-    eu-frankfurt-1 = "ocid1.image.oc1.eu-frankfurt-1.aaaaaaaaajkxjdpgfzjl7tg3a7vzdvwnww6w5k47r5acwe4fqecowqwuoria"
-    # uk-london-1    = "ocid1.image.oc1.uk-london-1.aaaaaaaasyumqn2ct4llv4nq4agiu4rrxyxf2p64i5noessrrannkaok4cza"
-  }
-}
-
-variable "flex_instance_image_ocid" {
-  type = map(string)
-  default = {
-    # us-phoenix-1 = "ocid1.image.oc1.phx.aaaaaaaa6hooptnlbfwr5lwemqjbu3uqidntrlhnt45yihfj222zahe7p3wq"
-    # us-ashburn-1 = "ocid1.image.oc1.iad.aaaaaaaa6tp7lhyrcokdtf7vrbmxyp2pctgg4uxvt4jz4vc47qoc2ec4anha"
-    eu-frankfurt-1 = "ocid1.image.oc1.eu-frankfurt-1.aaaaaaaaajkxjdpgfzjl7tg3a7vzdvwnww6w5k47r5acwe4fqecowqwuoria"
-    # uk-london-1 = "ocid1.image.oc1.uk-london-1.aaaaaaaaw5gvriwzjhzt2tnylrfnpanz5ndztyrv3zpwhlzxdbkqsjfkwxaq"
-  }
-}
-
 variable "db_size" {
   default = "50" # size in GBs
 }
@@ -95,28 +72,12 @@ resource "oci_core_instance" "test_instance" {
 
   source_details {
     source_type = "image"
-    source_id = var.flex_instance_image_ocid[var.region]
-    # Apply this to set the size of the boot volume that is created for this instance.
-    # Otherwise, the default boot volume size of the image is used.
-    # This should only be specified when source_type is set to "image".
-    #boot_volume_size_in_gbs = "60"
+    source_id = "ocid1.image.oc1.eu-frankfurt-1.aaaaaaaaajkxjdpgfzjl7tg3a7vzdvwnww6w5k47r5acwe4fqecowqwuoria"
   }
-
-  # Apply the following flag only if you wish to preserve the attached boot volume upon destroying this instance
-  # Setting this and destroying the instance will result in a boot volume that should be managed outside of this config.
-  # When changing this value, make sure to run 'terraform apply' so that it takes effect before the resource is destroyed.
-  #preserve_boot_volume = true
 
   metadata = {
     ssh_authorized_keys = var.ssh_public_key
   }
-
-  # preemptible_instance_config {
-  #   preemption_action {
-  #     type = "TERMINATE"
-  #     preserve_boot_volume = false
-  #   }
-  # }
 
   timeouts {
     create = "60m"
@@ -169,46 +130,6 @@ resource "oci_core_volume_backup_policy_assignment" "policy" {
   asset_id  = oci_core_instance.test_instance[count.index].boot_volume_id
   policy_id = data.oci_core_volume_backup_policies.test_predefined_volume_backup_policies.volume_backup_policies[0].id
 }
-
-/* resource "null_resource" "remote-exec" {
-  depends_on = [
-    oci_core_instance.test_instance,
-    oci_core_volume_attachment.test_block_attach,
-  ]
-  count = var.num_instances * var.num_iscsi_volumes_per_instance
-
-  provisioner "remote-exec" {
-    connection {
-      agent       = false
-      timeout     = "30m"
-      host        = oci_core_instance.test_instance[count.index % var.num_instances].public_ip
-      user        = "opc"
-      private_key = var.ssh_private_key
-    }
-
-    inline = [
-      "touch ~/IMadeAFile.Right.Here",
-      "sudo iscsiadm -m node -o new -T ${oci_core_volume_attachment.test_block_attach[count.index].iqn} -p ${oci_core_volume_attachment.test_block_attach[count.index].ipv4}:${oci_core_volume_attachment.test_block_attach[count.index].port}",
-      "sudo iscsiadm -m node -o update -T ${oci_core_volume_attachment.test_block_attach[count.index].iqn} -n node.startup -v automatic",
-      "sudo iscsiadm -m node -T ${oci_core_volume_attachment.test_block_attach[count.index].iqn} -p ${oci_core_volume_attachment.test_block_attach[count.index].ipv4}:${oci_core_volume_attachment.test_block_attach[count.index].port} -o update -n node.session.auth.authmethod -v CHAP",
-      "sudo iscsiadm -m node -T ${oci_core_volume_attachment.test_block_attach[count.index].iqn} -p ${oci_core_volume_attachment.test_block_attach[count.index].ipv4}:${oci_core_volume_attachment.test_block_attach[count.index].port} -o update -n node.session.auth.username -v ${oci_core_volume_attachment.test_block_attach[count.index].chap_username}",
-      "sudo iscsiadm -m node -T ${oci_core_volume_attachment.test_block_attach[count.index].iqn} -p ${oci_core_volume_attachment.test_block_attach[count.index].ipv4}:${oci_core_volume_attachment.test_block_attach[count.index].port} -o update -n node.session.auth.password -v ${oci_core_volume_attachment.test_block_attach[count.index].chap_secret}",
-      "sudo iscsiadm -m node -T ${oci_core_volume_attachment.test_block_attach[count.index].iqn} -p ${oci_core_volume_attachment.test_block_attach[count.index].ipv4}:${oci_core_volume_attachment.test_block_attach[count.index].port} -l",
-    ]
-  }
-} */
-
-/*
-# Gets the boot volume attachments for each instance
-data "oci_core_boot_volume_attachments" "test_boot_volume_attachments" {
-  depends_on          = [oci_core_instance.test_instance]
-  count               = var.num_instances
-  availability_domain = oci_core_instance.test_instance[count.index].availability_domain
-  compartment_id      = var.compartment_ocid
-
-  instance_id = oci_core_instance.test_instance[count.index].id
-}
-*/
 
 data "oci_core_instance_devices" "test_instance_devices" {
   count       = var.num_instances
