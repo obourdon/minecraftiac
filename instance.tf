@@ -1,3 +1,7 @@
+terraform {
+  required_version = ">= 1.0"
+}
+
 variable "compartment_ocid" {
 }
 
@@ -7,7 +11,15 @@ variable "ssh_public_key" {
 variable "availability_domain" {
 }
 
+variable "region" {
+}
+
+variable "tenancy_ocid" {
+}
+
 provider "oci" {
+  region       = var.region
+  tenancy_ocid = var.tenancy_ocid
 }
 
 # Defines the number of instances to deploy
