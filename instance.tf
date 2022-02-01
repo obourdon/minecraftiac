@@ -4,6 +4,9 @@ variable "compartment_ocid" {
 variable "ssh_public_key" {
 }
 
+variable "availability_domain" {
+}
+
 provider "oci" {
 }
 
@@ -72,7 +75,7 @@ variable "tag_namespace_name" {
 
 resource "oci_core_instance" "test_instance" {
   count               = var.num_instances
-  availability_domain = data.oci_identity_availability_domain.ad.name
+  availability_domain = var.availability_domain
   compartment_id      = var.compartment_ocid
   display_name        = "MinecraftHashitalkDrift${count.index}"
   shape               = var.instance_shape
@@ -124,7 +127,7 @@ resource "oci_core_instance" "test_instance" {
 
 resource "oci_core_volume" "test_block_volume" {
   count               = var.num_instances * var.num_iscsi_volumes_per_instance
-  availability_domain = data.oci_identity_availability_domain.ad.name
+  availability_domain = var.availability_domain
   compartment_id      = var.compartment_ocid
   display_name        = "TestBlock${count.index}"
   size_in_gbs         = var.db_size
@@ -146,7 +149,7 @@ resource "oci_core_volume_attachment" "test_block_attach" {
 
 resource "oci_core_volume" "test_block_volume_paravirtualized" {
   count               = var.num_instances * var.num_paravirtualized_volumes_per_instance
-  availability_domain = data.oci_identity_availability_domain.ad.name
+  availability_domain = var.availability_domain
   compartment_id      = var.compartment_ocid
   display_name        = "TestBlockParavirtualized${count.index}"
   size_in_gbs         = var.db_size
@@ -287,7 +290,7 @@ resource "oci_core_default_route_table" "default_route_table" {
 }
 
 resource "oci_core_subnet" "test_subnet" {
-  availability_domain = data.oci_identity_availability_domain.ad.name
+  availability_domain = var.availability_domain
   cidr_block          = "10.1.20.0/24"
   display_name        = "TestSubnet"
   dns_label           = "testsubnet"
@@ -330,6 +333,4 @@ resource "oci_core_security_list" "minecraft_security_list" {
     }
   }
 }
-
-
 
