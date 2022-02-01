@@ -1,40 +1,10 @@
-// Copyright (c) 2017, 2021, Oracle and/or its affiliates. All rights reserved.
-// Licensed under the Mozilla Public License v2.0
-
-variable "tenancy_ocid" {
-}
-
-variable "user_ocid" {
-}
-
-variable "fingerprint" {
-}
-
-//use private_key instead private_key_path
-//variable "private_key_path" {
-//}
-variable "private_key" {
-}
-
-variable "region" {
-}
-
 variable "compartment_ocid" {
 }
 
 variable "ssh_public_key" {
 }
 
-variable "ssh_private_key" {
-}
-
 provider "oci" {
-  tenancy_ocid     = var.tenancy_ocid
-  user_ocid        = var.user_ocid
-  fingerprint      = var.fingerprint
-  private_key      = var.private_key
-  #private_key_path = var.private_key_path
-  region           = var.region
 }
 
 # Defines the number of instances to deploy
@@ -104,7 +74,7 @@ resource "oci_core_instance" "test_instance" {
   count               = var.num_instances
   availability_domain = data.oci_identity_availability_domain.ad.name
   compartment_id      = var.compartment_ocid
-  display_name        = "MinecraftHashitalk${count.index}"
+  display_name        = "MinecraftHashitalkDrift${count.index}"
   shape               = var.instance_shape
 
   shape_config {
@@ -197,7 +167,7 @@ resource "oci_core_volume_backup_policy_assignment" "policy" {
   policy_id = data.oci_core_volume_backup_policies.test_predefined_volume_backup_policies.volume_backup_policies[0].id
 }
 
-resource "null_resource" "remote-exec" {
+/* resource "null_resource" "remote-exec" {
   depends_on = [
     oci_core_instance.test_instance,
     oci_core_volume_attachment.test_block_attach,
@@ -223,7 +193,7 @@ resource "null_resource" "remote-exec" {
       "sudo iscsiadm -m node -T ${oci_core_volume_attachment.test_block_attach[count.index].iqn} -p ${oci_core_volume_attachment.test_block_attach[count.index].ipv4}:${oci_core_volume_attachment.test_block_attach[count.index].port} -l",
     ]
   }
-}
+} */
 
 /*
 # Gets the boot volume attachments for each instance
