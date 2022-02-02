@@ -74,42 +74,44 @@ pipeline {
 				echo "DOCKERHUB_PASSWORD=${DOCKERHUB_PASSWORD}"
 				//echo "KUBECONFIG=${KUBECONFIG}"
 				
-				dir ('/root') {
-					script {
-						//Get the API and SSH encoded key Files with vault client because curl breaks the end line of the key file
-						sh 'vault kv get -field=api_private_key secret/demoatp | tr -d "\n" | base64 --decode > bmcs_api_key.pem'
-						sh 'vault kv get -field=ssh_private_key secret/demoatp | tr -d "\n" | base64 --decode > id_rsa'
-						sh 'vault kv get -field=ssh_public_key secret/demoatp | tr -d "\n" | base64 --decode > id_rsa.pub'
-						
-						//OCI CLI permissions mandatory on some files.
-						sh 'oci setup repair-file-permissions --file ./bmcs_api_key.pem'
-						
-						sh 'ls'
-						sh 'cat ./bmcs_api_key.pem'
-						sh 'cat ./id_rsa'
-						sh 'chmod 400 ./id_rsa'
-						sh 'cat ./id_rsa.pub'
-						
-						//Use private_key instead private_key_path
-						//env.TF_VAR_private_key_path = './bmcs_api_key.pem'
-						//echo "TF_VAR_private_key_path=${TF_VAR_private_key_path}"
-						env.TF_VAR_private_key=sh returnStdout: true, script: 'vault kv get -field=api_private_key secret/demoatp | tr -d "\n" | base64 --decode'
-						echo "TF_VAR_private_key=${TF_VAR_private_key}"
-						
-						env.TF_VAR_ssh_private_key = sh returnStdout: true, script: 'cat ./id_rsa'
-						echo "TF_VAR_ssh_private_key=${TF_VAR_ssh_private_key}"
-						env.TF_VAR_ssh_public_key = sh returnStdout: true, script: 'cat ./id_rsa.pub'
-						echo "TF_VAR_ssh_public_key=${TF_VAR_ssh_public_key}"
-					}
+				
+				script {
+					//Get the API and SSH encoded key Files with vault client because curl breaks the end line of the key file
+					sh 'vault kv get -field=api_private_key secret/demoatp | tr -d "\n" | base64 --decode > bmcs_api_key.pem'
+					sh 'vault kv get -field=ssh_private_key secret/demoatp | tr -d "\n" | base64 --decode > id_rsa'
+					sh 'vault kv get -field=ssh_public_key secret/demoatp | tr -d "\n" | base64 --decode > id_rsa.pub'
+					
+					//OCI CLI permissions mandatory on some files.
+					sh 'oci setup repair-file-permissions --file ./bmcs_api_key.pem'
+					
+					sh 'chemin=$(pwd)'
+					sh 'ls'
+					sh 'cat ./bmcs_api_key.pem'
+					sh 'cat ./id_rsa'
+					sh 'chmod 400 ./id_rsa'
+					sh 'cat ./id_rsa.pub'
+					
+					//Use private_key instead private_key_path
+					//env.TF_VAR_private_key_path = './bmcs_api_key.pem'
+					//echo "TF_VAR_private_key_path=${TF_VAR_private_key_path}"
+					env.TF_VAR_private_key=sh returnStdout: true, script: 'vault kv get -field=api_private_key secret/demoatp | tr -d "\n" | base64 --decode'
+					echo "TF_VAR_private_key=${TF_VAR_private_key}"
+					
+					env.TF_VAR_ssh_private_key = sh returnStdout: true, script: 'cat ./id_rsa'
+					echo "TF_VAR_ssh_private_key=${TF_VAR_ssh_private_key}"
+					env.TF_VAR_ssh_public_key = sh returnStdout: true, script: 'cat ./id_rsa.pub'
+					echo "TF_VAR_ssh_public_key=${TF_VAR_ssh_public_key}"
 				}
 				
+				
 				//OCI CLI Setup
+				sh 'echo $chemin'
 				sh 'mkdir -p /root/.oci'
 				sh 'rm -rf /root/.oci/config'
 				sh 'echo "[DEFAULT]" > /root/.oci/config'
 				sh 'echo "user=${TF_VAR_user_ocid}" >> /root/.oci/config'
 				sh 'echo "fingerprint=${TF_VAR_fingerprint}" >> /root/.oci/config'
-				sh 'echo "key_file=/root/bmcs_api_key.pem" >> /root/.oci/config'
+				sh 'echo "key_file=$chemin/bmcs_api_key.pem" >> /root/.oci/config'
 				sh 'echo "tenancy=${TF_VAR_tenancy_ocid}" >> /root/.oci/config'
 				sh 'echo "region=${TF_VAR_region}" >> /root/.oci/config'
 				sh 'cat /root/.oci/config'
