@@ -137,12 +137,13 @@ pipeline {
 					//Terraform plan
 					if (env.CHOICE == "Create") {
 						env.CHECK_STACK_ID = sh returnStdout: true, script: 'oci resource-manager stack list -c $TF_VAR_compartment_ocid --display-name Hashitalk-drift --query "data[0].id" --raw-output'
-						if (env.CHECK_STACK_ID != null) {
-							echo "STACK already exist"
+						if (env.CHECK_STACK_ID == "") {
+							env.CONFIG_SOURCE_PROVIDER_ID = sh returnStdout: true, script: 'oci resource-manager configuration-source-provider list -c $TF_VAR_compartment_ocid --query "data.items[0].id" --raw-output'
+							env.STACK_ID = sh returnStdout: true, script: 'oci resource-manager stack create-from-git-provider -c $TF_VAR_compartment_ocid --config-source-configuration-source-provider-id $CONFIG_SOURCE_PROVIDER_ID --display-name Hashitalk-drift --config-source-repository-url https://github.com/cpruvost/minecraftiac.git --config-source-branch-name drift --variables file://var.json --terraform-version 1.0.x --query "data.id" --raw-output'
+							sh 'echo "Stack_id" : $STACK_ID'
 						}
 						else {
-							env.STACK_ID = sh returnStdout: true, script: 'oci resource-manager stack create-from-git-provider -c $TF_VAR_compartment_ocid --display-name Hashitalk-drift --config-source-repository-url https://github.com/cpruvost/minecraftiac.git --config-source-branch-name drift --variables file://var.json --terraform-version 1.0.x --query "data.id" --raw-output'
-							sh 'echo "Stack_id" : $STACK_ID'
+							echo "STACK already exist"
 						}
 						
 					}
