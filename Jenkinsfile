@@ -122,14 +122,13 @@ pipeline {
 		stage('OCI RM Minecraft VM') { 
             steps {
 				sh 'echo "{" > var.json'
-				sh 'echo "\""region\"": \""${TF_VAR_region}\""" >> var.json'
-				sh 'echo "\""tenancy_ocid\"": \""${TF_VAR_tenancy_ocid}\""" >> var.json'
-				sh 'echo "\""availability_domain\"": \""${AVAILIBILITY_DOMAIN}\""" >> var.json'
-				sh 'echo "\""compartment_ocid\"": \""${TF_VAR_compartment_ocid}\""" >> var.json'
-				sh 'echo "\""ssh_public_key\"": \""${TF_VAR_ssh_public_key}\""" >> var.json'
+				sh 'echo "\\\""region\\\"": \\\""${TF_VAR_region}\\\""" >> var.json'
+				sh 'echo "\\\""tenancy_ocid\\\"": \\\""${TF_VAR_tenancy_ocid}\\\""" >> var.json'
+				sh 'echo "\\\""availability_domain\\\"": \\\""${AVAILIBILITY_DOMAIN}\\\""" >> var.json'
+				sh 'echo "\\\""compartment_ocid\\\"": \\\""${TF_VAR_compartment_ocid}\\\""" >> var.json'
+				sh 'echo "\\\""ssh_public_key\\\"": \\\""${TF_VAR_ssh_public_key}\\\""" >> var.json'
 				sh 'echo "}" >> var.json'
 				sh 'cat var.json'
-
 				
 
 				script {
