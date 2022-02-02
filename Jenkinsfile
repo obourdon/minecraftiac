@@ -164,9 +164,8 @@ pipeline {
 					if (env.CHOICE == "Create") {
 						env.JOB_ID = sh returnStdout: true, script: 'oci resource-manager job create-apply-job --stack-id $CHECK_STACK_ID --execution-plan-strategy FROM_PLAN_JOB_ID --execution-plan-job-id $PLAN_ID --display-name "Minecraft apply" --query "data.id" --raw-output' 
 						sh 'oci resource-manager job get-job-logs --job-id $JOB_ID --query "data[*].message" --raw-output --all'
-						env.INSTANCE_ID = sh returnStdout: true, script: 'oci compute instance list -c $TF_VAR_compartment_ocid --display-name MinecraftHashitalkDrift0 --query "data[0].id"'
-						sh 'echo $INSTANCE_ID'
-						sh 'oci compute instance list-vnics --instance-id $(INSTANCE_ID) | jq .' 
+						env.INSTANCE_ID = sh returnStdout: true, script: 'oci compute instance list -c $TF_VAR_compartment_ocid --display-name MinecraftHashitalkDrift0 --query "data[0].id" --raw-output'
+						env.VM_PUBLICIP = sh returnStdout: true, script: 'oci compute instance list-vnics --instance-id $INSTANCE_ID | jq -r ".data[]."public-ip""' 
 						//sh 'terraform output -json | jq -r .instance_public_ips.value[0][0] > result.test'
 						//env.VM_PUBLICIP = sh (script: 'cat ./result.test', returnStdout: true).trim()
 					}
@@ -177,7 +176,7 @@ pipeline {
 			
 			}
 		} 
-/*
+
 		stage('Check VM Ssh Ready') { 
 			steps {
 				dir ('./ansible') {
@@ -231,6 +230,6 @@ pipeline {
 					}	
 				}
 			}
-		} */
+		} 
 	}	   
 }
