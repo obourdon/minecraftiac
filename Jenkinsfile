@@ -153,7 +153,7 @@ pipeline {
 			}
 		}
 		
-		/* stage('TF Apply Minecraft VM') { 
+/* 		stage('TF Apply Minecraft VM') { 
             steps {
 				dir ('./tf/modules/vm') {
 					sh 'ls'
@@ -208,16 +208,13 @@ pipeline {
 					script {				
 						echo "CHOICE=${env.CHOICE}"
 
-						/*environment {
-    						VM_PUBLICIP = "${env.VM_PUBLICIP}"
-  						}*/
+						
 
 						//Terraform plan
 						if (env.CHOICE == "Create") {
 							sh 'ls'
 							sh 'echo $VM_PUBLICIP'
 							sh 'sed -i \'s/ipaddressparam/\'$VM_PUBLICIP\'/\' ./hosts'
-							/*sh 'sed -i \'s/ipaddressparam/$VM_PUBLICIP/\' ./hosts'*/
 							sh 'cat ./hosts'
 							sh 'ansible all --list-hosts'
 							sh 'ansible-playbook ./minecraftprereq.yml --syntax-check'
