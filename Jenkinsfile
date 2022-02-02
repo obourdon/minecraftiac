@@ -154,28 +154,26 @@ pipeline {
 			}
 		}
 		
-/* 		stage('TF Apply Minecraft VM') { 
+ 		stage('OCI RM Apply Minecraft VM') { 
             steps {
-				dir ('./tf/modules/vm') {
-					sh 'ls'
+
+				script {				
+					echo "CHOICE=${env.CHOICE}"
 					
-					script {				
-						echo "CHOICE=${env.CHOICE}"
-						
-					    //Terraform plan
-					    if (env.CHOICE == "Create") {
-							sh 'terraform apply -input=false -auto-approve myplan'
-							sh 'terraform output -json | jq -r .instance_public_ips.value[0][0] > result.test'
-							env.VM_PUBLICIP = sh (script: 'cat ./result.test', returnStdout: true).trim()
-						}
-						else {
-						    sh 'terraform destroy -input=false -auto-approve'
-						}
+					//Terraform plan
+					if (env.CHOICE == "Create") {
+						env.JOB_ID = sh returnStdout: true, script: 'oci resource-manager job create-apply-job --stack-id $STACK_ID --execution-plan-strategy FROM_PLAN_JOB_ID --execution-plan-job-id $PLAN_ID --display-name "Minecraft apply"' 
+						//sh 'terraform output -json | jq -r .instance_public_ips.value[0][0] > result.test'
+						//env.VM_PUBLICIP = sh (script: 'cat ./result.test', returnStdout: true).trim()
+					}
+					else {
+						sh 'terraform destroy -input=false -auto-approve'
 					}
 				}
+			
 			}
 		} 
-
+/*
 		stage('Check VM Ssh Ready') { 
 			steps {
 				dir ('./ansible') {
