@@ -74,7 +74,7 @@ pipeline {
 				echo "DOCKERHUB_PASSWORD=${DOCKERHUB_PASSWORD}"
 				//echo "KUBECONFIG=${KUBECONFIG}"
 				
-				dir ('./tf/modules/vm') {
+				dir ('/root') {
 					script {
 						//Get the API and SSH encoded key Files with vault client because curl breaks the end line of the key file
 						sh 'vault kv get -field=api_private_key secret/demoatp | tr -d "\n" | base64 --decode > bmcs_api_key.pem'
@@ -109,7 +109,7 @@ pipeline {
 				sh 'echo "[DEFAULT]" > /root/.oci/config'
 				sh 'echo "user=${TF_VAR_user_ocid}" >> /root/.oci/config'
 				sh 'echo "fingerprint=${TF_VAR_fingerprint}" >> /root/.oci/config'
-				sh 'echo "key_file=/root/.oci/bmcs_api_key.pem" >> /root/.oci/config'
+				sh 'echo "key_file=/root/bmcs_api_key.pem" >> /root/.oci/config'
 				sh 'echo "tenancy=${TF_VAR_tenancy_ocid}" >> /root/.oci/config'
 				sh 'echo "region=${TF_VAR_region}" >> /root/.oci/config'
 				sh 'cat /root/.oci/config'
