@@ -6,15 +6,12 @@ pipeline {
 			args '-u root:root'
 		}
 	}
-	
-	//Parameters of the pipeline. You can define more parameters in this pipeline in order to have less hard code variables.
+
 	parameters {
-		//Jenkins Bugg with password so I used string for demo
-        //password(defaultValue: "xxxxxxxxxx", description: 'What is the vault token ?', name: 'VAULT_TOKEN')
 		string(defaultValue: "xxxxxxxxxx", description: 'What is the vault token ?', name: 'VAULT_TOKEN')
 		string(defaultValue: "130.61.125.xxx", description: 'What is the vault server IP Address ?', name: 'VAULT_SERVER_IP')
 		string(defaultValue: "demoatp", description: 'What is the vault secret name ?', name: 'VAULT_SECRET_NAME')  	
-		string(defaultValue: "https://objectstorage.eu-frankfurt-1.oraclecloud.com/p/9NwDrfPOqX5QIxYxv9NfkWmQXUAFzOtIC4pAsLI1KhtvxNywKkOA1M8eamVaydrY/n/oraseemeafrtech1/b/MinecraftHashitalk/o/terraform.tfstate", description: 'Where is stored the terraform state ?', name: 'TERRAFORM_STATE_URL')  
+		string(defaultValue: "nkTJ:EU-FRANKFURT-1-AD-2", description: 'What is the availibility domain ?', name: 'AVAILIBILITY_DOMAIN')  	
 		choice(name: 'CHOICE', choices: ['Create', 'Remove'], description: 'Choose between Create or Remove Infrastructure')
     }
 	
@@ -25,23 +22,14 @@ pipeline {
 		VAULT_SERVER_IP = "${params.VAULT_SERVER_IP}"
 		VAULT_ADDR = "http://${params.VAULT_SERVER_IP}:8200"
 		VAULT_SECRET_NAME = "${params.VAULT_SECRET_NAME}"
+		AVAILIBILITY_DOMAIN = "${params.AVAILIBILITY_DOMAIN}"
 		CHOICE = "${params.CHOICE}"
 		
 		//Terraform variables
 		TF_CLI_ARGS = "-no-color"
-		TF_VAR_terraform_state_url = "${params.TERRAFORM_STATE_URL}"
 	}
     
     stages {
-		//Only for debug due to Jenkins password bugg
-        /*stage('Check Vault Information') {
-            steps {
-				echo "${VAULT_TOKEN}"
-				echo "${VAULT_SERVER_IP}"
-				echo "${VAULT_ADDR}"
-				echo "${VAULT_SECRET_NAME}"
-            }
-        }*/
 
 		stage('Display User Name') {
 			agent any
@@ -74,9 +62,6 @@ pipeline {
 					env.DOCKERHUB_USERNAME = sh returnStdout: true, script: 'vault kv get -field=dockerhub_username secret/demoatp'
 					env.DOCKERHUB_PASSWORD = sh returnStdout: true, script: 'vault kv get -field=dockerhub_password secret/demoatp'
 					
-					//Terraform debugg option if problem
-					//env.TF_LOG="DEBUG"
-					//env.OCI_GO_SDK_DEBUG="v"
 				}
 				
 				//Check all cloud information.
@@ -85,7 +70,6 @@ pipeline {
 				echo "TF_VAR_fingerprint=${TF_VAR_fingerprint}"
 				echo "TF_VAR_compartment_ocid=${TF_VAR_compartment_ocid}"
 				echo "TF_VAR_region=${TF_VAR_region}"
-				echo "TF_VAR_terraform_state_url=${TF_VAR_terraform_state_url}"
 				echo "DOCKERHUB_USERNAME=${DOCKERHUB_USERNAME}"
 				echo "DOCKERHUB_PASSWORD=${DOCKERHUB_PASSWORD}"
 				//echo "KUBECONFIG=${KUBECONFIG}"
@@ -135,30 +119,41 @@ pipeline {
             }
         }
 		
-		stage('TF Plan Minecraft VM') { 
+		stage('OCI RM Minecraft VM') { 
             steps {
-				dir ('./tf/modules/vm') {
-					sh 'ls'
-					
-					//Terraform initialization in order to get oci plugin provider	
-					sh 'terraform init -reconfigure -backend-config="address=${TF_VAR_terraform_state_url}"'
-					
-					
-					script {
-						echo "CHOICE=${env.CHOICE}"
-					    //Terraform plan
-					    if (env.CHOICE == "Create") {
-							sh 'terraform plan -out myplan'
+				sh 'echo "{" > var.json'
+				sh 'echo "\""region\"": \""${TF_VAR_region}\""" >> var.json'
+				sh 'echo "\""tenancy_ocid\"": \""${TF_VAR_tenancy_ocid}\""" >> var.json'
+				sh 'echo "\""availability_domain\"": \""${AVAILIBILITY_DOMAIN}\""" >> var.json'
+				sh 'echo "\""compartment_ocid\"": \""${TF_VAR_compartment_ocid}\""" >> var.json'
+				sh 'echo "\""ssh_public_key\"": \""${TF_VAR_ssh_public_key}\""" >> var.json'
+				sh 'echo "}" > var.json'
+				sh 'cat var.json'
+
+				
+
+				script {
+					echo "CHOICE=${env.CHOICE}"
+					//Terraform plan
+					if (env.CHOICE == "Create") {
+						env.CHECK_STACK_ID = sh returnStdout: true, script: 'oci resource-manager stack list -c $TF_VAR_compartment_ocid --display-name Hashitalk-drift --query 'data[0].id' --raw-output'
+						if (env.CHECK_STACK_ID != null) {
+							echo "STACK already exist"
 						}
 						else {
-						    sh 'terraform plan -destroy -out myplan'
+							env.STACK_ID = sh returnStdout: true, script: 'oci resource-manager stack create-from-git-provider -c $TF_VAR_compartment_ocid --display-name Hashitalk-drift --config-source-repository-url https://github.com/cpruvost/minecraftiac.git --config-source-branch-name drift --variables file://var.json --terraform-version 1.0.x --query 'data.id' --raw-output'
+							sh 'echo "Stack_id" : $STACK_ID'
 						}
+						
+					}
+					else {
+						sh 'terraform plan -destroy -out myplan'
 					}
 				}
 			}
 		}
 		
-		stage('TF Apply Minecraft VM') { 
+		/* stage('TF Apply Minecraft VM') { 
             steps {
 				dir ('./tf/modules/vm') {
 					sh 'ls'
@@ -236,6 +231,6 @@ pipeline {
 					}	
 				}
 			}
-		}
+		} */
 	}	   
 }
