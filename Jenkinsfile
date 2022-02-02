@@ -119,7 +119,7 @@ pipeline {
             }
         }
 		
-		stage('OCI RM Minecraft VM') { 
+		stage('OCI RM Plan Minecraft VM') { 
             steps {
 				sh 'echo "{" > var.json'
 				sh 'echo "\\\""region\\\"": \\\""${TF_VAR_region}\\\""," >> var.json'
@@ -138,13 +138,14 @@ pipeline {
 						env.CHECK_STACK_ID = sh returnStdout: true, script: 'oci resource-manager stack list -c $TF_VAR_compartment_ocid --display-name Hashitalk-drift --query "data[0].id" --raw-output'
 						if (env.CHECK_STACK_ID == "") {
 							env.CONFIG_SOURCE_PROVIDER_ID = sh returnStdout: true, script: 'oci resource-manager configuration-source-provider list -c $TF_VAR_compartment_ocid --query "data.items[0].id" --raw-output'
-							env.STACK_ID = sh returnStdout: true, script: 'oci resource-manager stack create-from-git-provider -c $TF_VAR_compartment_ocid --config-source-configuration-source-provider-id $CONFIG_SOURCE_PROVIDER_ID --display-name Hashitalk-drift --config-source-repository-url https://github.com/cpruvost/minecraftiac.git --config-source-branch-name drift --variables file://var.json --terraform-version 1.0.x --query "data.id" --raw-output'
+							env.CHECK_STACK_ID = sh returnStdout: true, script: 'oci resource-manager stack create-from-git-provider -c $TF_VAR_compartment_ocid --config-source-configuration-source-provider-id $CONFIG_SOURCE_PROVIDER_ID --display-name Hashitalk-drift --config-source-repository-url https://github.com/cpruvost/minecraftiac.git --config-source-branch-name drift --variables file://var.json --terraform-version 1.0.x --query "data.id" --raw-output'
 							sh 'echo "Stack_id" : $STACK_ID'
 						}
 						else {
 							echo "STACK already exist"
 						}
-						
+						env.PLAN_ID = sh returnStdout: true, script: 'oci resource-manager job create-plan-job --stack-id $CHECK_STACK_ID --wait-for-state SUCCEEDED --query "data.id" --raw-output'
+						sh 'oci resource-manager job get-job-logs --job-id $PLAN_ID --query "data[*].message" --raw-output --all'
 					}
 					else {
 						sh 'terraform plan -destroy -out myplan'
