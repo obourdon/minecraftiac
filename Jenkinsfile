@@ -139,7 +139,7 @@ pipeline {
 						if (env.CHECK_STACK_ID == "") {
 							env.CONFIG_SOURCE_PROVIDER_ID = sh returnStdout: true, script: 'oci resource-manager configuration-source-provider list -c $TF_VAR_compartment_ocid --query "data.items[0].id" --raw-output'
 							env.CHECK_STACK_ID = sh returnStdout: true, script: 'oci resource-manager stack create-from-git-provider -c $TF_VAR_compartment_ocid --config-source-configuration-source-provider-id $CONFIG_SOURCE_PROVIDER_ID --display-name Hashitalk-drift --config-source-repository-url https://github.com/cpruvost/minecraftiac.git --config-source-branch-name drift --variables file://var.json --terraform-version 1.0.x --query "data.id" --raw-output'
-							sh 'echo "Stack_id" : $STACK_ID'
+							sh 'echo "Stack_id" : $CHECK_STACK_ID'
 						}
 						else {
 							echo "STACK already exist"
@@ -162,7 +162,7 @@ pipeline {
 					
 					//Terraform plan
 					if (env.CHOICE == "Create") {
-						env.JOB_ID = sh returnStdout: true, script: 'oci resource-manager job create-apply-job --stack-id $STACK_ID --execution-plan-strategy FROM_PLAN_JOB_ID --execution-plan-job-id $PLAN_ID --display-name "Minecraft apply"' 
+						env.JOB_ID = sh returnStdout: true, script: 'oci resource-manager job create-apply-job --stack-id $CHECK_STACK_ID --execution-plan-strategy FROM_PLAN_JOB_ID --execution-plan-job-id $PLAN_ID --display-name "Minecraft apply"' 
 						//sh 'terraform output -json | jq -r .instance_public_ips.value[0][0] > result.test'
 						//env.VM_PUBLICIP = sh (script: 'cat ./result.test', returnStdout: true).trim()
 					}
